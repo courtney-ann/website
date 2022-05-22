@@ -8,6 +8,7 @@ from datetime import timedelta
 from flask_pymongo import PyMongo
 from marshmallow import Schema, fields, ValidationError
 from flask_cors import CORS
+import bcrypt
 
 
 load_dotenv()
@@ -18,7 +19,7 @@ CORS(app)
 app.config["MONGO_URI"] = os.getenv("MONGO_CONNECTION_STRING") 
 mongo = PyMongo(app)
 
-app.permanent_session_lifetime = timedelta(minutes = 5)
+app.permanent_session_lifetime = timedelta(minutes = 10)
 app.secret_key = os.getenv("secret")
 
 class credSchema(Schema):
@@ -58,23 +59,14 @@ def login():
          users = mongo.db.users
          Admin = users.find_one({'username': request.form['nm']})
          if Admin:
-            if bcrypt.hashpw(request.form['pw'].encode('utf-8'), Admin['password'].encode('utf-8')) == Admin['password'].encode('utf-8'):
+            if request.form['pw'] == Admin['password']:
                 session['username'] = request.form['nm']
                 flash("Login succesful!")
                 return redirect(url_for('home')) 
 
             else:
-                flash("Login succesful!")
-                #return redirect(url_for('home'))
-
-    # if request.method == 'POST':     
-    #     if request.form['nm'] != 'admin' and request.form['pw'] != 'admin':
-    #        flash("Invalid Credentials")
-    #       # return redirect(url_for('login'))
-    #        return render_template('login.html')
-
-    #     elif request.form['nm'] == 'admin' and request.form['pw'] == 'admin':
-    #         return redirect(url_for('home'))
+                flash("Login unsuccesful")
+                return redirect(url_for('login'))
 
     elif request.method == "GET":
          return render_template('login.html')
@@ -82,22 +74,29 @@ def login():
 
 @app.route('/drivers', methods = ['GET',' POST', 'PATCH', 'DELETE'])
 def drivers():
-    return render_template('drivers.html')
+    if 'username' in session:
+        return render_template('drivers.html')
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/drowsy', methods = ['GET',' POST', 'PATCH', 'DELETE'])
 def drowsy():
-    return render_template('drowsy.html')
-
+    if 'username' in session:
+        return render_template('drowsy.html')
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/accident', methods = ['GET',' POST', 'PATCH', 'DELETE'])
 def accident():
-    return render_template('accident.html')
-
+     if 'username' in session:
+        return render_template('accident.html')
+     else:
+        return redirect(url_for('login'))
 
 @app.route("/logout")
 def logout():
-    session.pop('nm', None)
+    session.pop('username', None)
     flash("Logout successful")
     return redirect(url_for('login'))
 
