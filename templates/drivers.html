@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="static/style.css" rel="stylesheet">    <!-- href is the path of the stylesheet -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css">
+        <script src="https://kit.fontawesome.com/2dd61525fb.js" crossorigin="anonymous"></script>
+        <title>Drowsy Driver Detection System - Drivers List</title>
+    </head>
+
+    <body>
+        <section class="header">
+            <nav>
+                <a href = "drivers.html"><img src = "static/assets/banner.png"></a>
+                <div class="nav-links" id = "navLinks">
+                    <i class="fa fa-times" onclick="hideMenu()"></i>
+                    <ul>
+                        
+                        <li><a href = "logout.html">LOGOUT</a></li>
+                        <li><a href = "home.html">HOME</a></li>
+                        <li><a href = "about.html">ABOUT</a></li>
+                        <li><a href = "drivers.html">DRIVERS</a></li>
+                        <li><a href = "drowsy.html">DROWSY DRIVERS</a></li>
+                        <li><a href = "accident.html">ACCIDENTS</a></li>
+                        <li><a href = "contact.html">CONTACT</a></li>
+                    
+                    </ul>
+                </div>
+                <i class="fa fa-bars" onclick="showMenu()"></i>
+            </nav>
+
+            <!-- Drivers List Page -->
+            <div class = "drivers">
+                <h1>Drivers List</h1> 
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>License Plate #</th>
+                        <th>Surname</th>
+                        <th>First Name</th>
+                        <th>Contact</th>
+                    </tr> 
+            </div>
+            
+        </section>
+
+        <!-- JavaScript for Toggle Menu -->
+        <script>
+            var navLink = document.getElementById("navLinks");
+            
+            function showMenu(){
+                navLinks.style.right = "0";
+            }
+
+            function hideMenu(){
+                navLinks.style.right = "-200px";
+            }
+        </script>
+        <script src = "static/script.js"></script>
+    </body>
+
+</html>

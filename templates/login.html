@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="static/style.css" rel="stylesheet">    <!-- href is the path of the stylesheet -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css">
+        <script src="https://kit.fontawesome.com/2dd61525fb.js" crossorigin="anonymous"></script>
+        <title>Drowsy Driver Detection System - Login Page</title>
+    </head>
+
+    <body>
+        <section class="header">
+            <nav>
+                <a href = "login.html"><img src = "static/assets/banner.png"></a>
+                <div class="nav-links" id = "navLinks">
+                    <i class="fa fa-times" onclick="hideMenu()"></i>
+                    <ul>
+                        <li><a href = "login.html">LOGIN</a></li> 
+                        <li><a href = "about.html">ABOUT</a></li>
+                        <li><a href = "contact.html">CONTACT</a></li>
+                    
+                    </ul>
+                </div>
+                <i class="fa fa-bars" onclick="showMenu()"></i>
+            </nav>
+
+            <!-- Login Page -->
+            <div class = "login"></div>
+                <div class = "form">
+                    <h2>Enter your credentials</h2> 
+                        <form action = '/login' method = 'POST'>
+                            <b><p>ID:</p> </b>
+                            <p><input id = "identifier" type = "text" name = "nm" > </p>
+                            <b><p>Password:</p></b> 
+                            <p><input id = "credential" type = "password" name = "pw" required > </p>
+                            <p><input id = "enter" type = "submit" Value = "Submit"/></p>
+                        </form>
+                </div>    
+            </div>
+            
+        </section>
+
+        <!-- JavaScript for Toggle Menu -->
+        <script>
+            var navLink = document.getElementById("navLinks");
+            
+            function showMenu(){
+                navLinks.style.right = "0";
+            }
+
+            function hideMenu(){
+                navLinks.style.right = "-200px";
+            }
+        </script>
+
+            
+        
+        <script>
+            // function postCredentials() {
+            //     // console.log('The button was clicked');
+            //     const i = document.getElementById("identifier").value;
+            //     const p = document.getElementById("credential").value;
+            //     console.log(i);
+
+            //     // JS Object to be sent to server to match
+            //     credObj = {
+            //         "user": i,
+            //         "pw": p
+            //     };
+
+            //     postFeat = {
+            //         method: "POST",
+            //         headers: {"Content-Type": "application/json"
+            //         },
+            //         body: JSON.stringify(credObj)
+            //     }
+                
+            //     //url from server, fetch is asynchronous 
+            //     //the data fetched from the server is displayed in the console
+            //     fetch("http://10.22.12.111:3000/login", postFeat).then((data) => (console.log(data))); 
+                
+
+            // }
+            // var button = document.getElementById("enter");
+            // button.addEventListener("click", postCredentials());
+        </script>
+
+        <script src = "static/script.js"></script>
+    </body>
+
+</html>
