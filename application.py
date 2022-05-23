@@ -13,14 +13,14 @@ import bcrypt
 
 load_dotenv()
 
-app = Flask(__name__)
-CORS(app)
+application = Flask(__name__)
+CORS(application)
 #setup location of database
-app.config["MONGO_URI"] = os.getenv("MONGO_CONNECTION_STRING") 
-mongo = PyMongo(app)
+application.config["MONGO_URI"] = os.getenv("MONGO_CONNECTION_STRING") 
+mongo = PyMongo(application)
 
-app.permanent_session_lifetime = timedelta(minutes = 10)
-app.secret_key = os.getenv("secret")
+application.permanent_session_lifetime = timedelta(minutes = 10)
+application.secret_key = os.getenv("secret")
 
 
 class driverSchema(Schema):
@@ -42,22 +42,22 @@ driver = {
     "contact": "876-331-7440"
 }
 
-@app.route('/home', methods = ['GET'])
+@application.route('/home', methods = ['GET'])
 def home():
     return render_template('home.html')
 
 
-@app.route('/contact', methods = ['GET'])
+@application.route('/contact', methods = ['GET'])
 def contact():
     return render_template('contact.html')
 
 
-@app.route('/about', methods = ['GET'])
+@application.route('/about', methods = ['GET'])
 def about():
     return render_template('about.html')
 
 
-@app.route('/login', methods = ['GET', 'POST'])
+@application.route('/login', methods = ['GET', 'POST'])
 def login():
     
     if request.method == 'POST':
@@ -78,19 +78,19 @@ def login():
     
 
 # Displays all drivers in the driver list collection
-@app.route('/drivers', methods = ['GET'])       
+@application.route('/drivers', methods = ['GET'])       
 def drivers():
     drivers = mongo.db.driverList
     if 'username' in session:
         list = drivers.find()
         driver_list = loads(dumps(list))
-        return jsonify(driver_list)         
-        return render_template('drivers.html')
+        #return jsonify(driver_list)         
+        return render_template('drivers.html', list = list)
     else:
         return redirect(url_for('login'))
 
 # Displays all drowsy drivers in the driver list collection
-@app.route('/drowsy', methods = ['GET',' POST', 'PATCH', 'DELETE'])
+@application.route('/drowsy', methods = ['GET', 'POST', 'PATCH', 'DELETE'])
 def drowsy():
         drivers = mongo.db.driverList
         if request.method == 'GET':
@@ -103,14 +103,14 @@ def drowsy():
                 return redirect(url_for('login'))
 
 # Displays all accidents with drivers in the driver list collection
-@app.route('/accident', methods = ['GET',' POST', 'PATCH', 'DELETE'])
+@application.route('/accident', methods = ['GET',' POST', 'PATCH', 'DELETE'])
 def accident():
      if 'username' in session:
         return render_template('accident.html')
      else:
         return redirect(url_for('login'))
 
-@app.route("/logout")
+@application.route("/logout")
 def logout():
     session.pop('username', None)
     flash("Logout successful")
@@ -118,4 +118,4 @@ def logout():
 
 
 if __name__ == "__main__":
-  app.run(debug=True, port=3000, host="0.0.0.0")
+    application.run(debug=True, port=3000, host="0.0.0.0")
