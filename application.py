@@ -84,20 +84,41 @@ def drivers():
     if 'username' in session:
         list = drivers.find()
         driver_list = loads(dumps(list))
-        #return jsonify(driver_list)         
-        return render_template('drivers.html', list = list)
+        driver_list = jsonify(driver_list)          
+        return render_template('drivers.html', driver_list = driver_list)
     else:
         return redirect(url_for('login'))
 
 # Displays all drowsy drivers in the driver list collection
 @application.route('/drowsy', methods = ['GET', 'POST', 'PATCH', 'DELETE'])
 def drowsy():
-        drivers = mongo.db.driverList
+        drowsy = mongo.db.drowsyList
         if request.method == 'GET':
             if 'username' in session:
-                list = drivers.find()
-                driver_list = loads(dumps(list))
+                list = drowsy.find()
+                # drowsy_list = loads(dumps(list))
                 #return jsonify()       #list of drowsy drivers
+                return render_template('drowsy.html')
+            else:
+                return redirect(url_for('login'))
+
+        if request.method == 'POST':
+            if 'username' in session:
+                
+                return render_template('drowsy.html')
+            else:
+                return redirect(url_for('login'))
+
+        if request.method == 'PATCH':
+            if 'username' in session:
+                
+                return render_template('drowsy.html')
+            else:
+                return redirect(url_for('login'))
+
+        if request.method == 'DELETE':
+            if 'username' in session:
+                
                 return render_template('drowsy.html')
             else:
                 return redirect(url_for('login'))
@@ -105,10 +126,37 @@ def drowsy():
 # Displays all accidents with drivers in the driver list collection
 @application.route('/accident', methods = ['GET',' POST', 'PATCH', 'DELETE'])
 def accident():
-     if 'username' in session:
-        return render_template('accident.html')
-     else:
-        return redirect(url_for('login'))
+     accident = mongo.db.accidentList
+     if request.method == 'GET':
+        if 'username' in session:
+            list = accident.find()
+            accident_list = loads(dumps(list))
+            #return jsonify(accident_list)       #list of drowsy drivers
+            return render_template('accident.html')
+        else:
+            return redirect(url_for('login'))
+
+     if request.method == 'POST':
+        if 'username' in session:
+            
+            return render_template('accident.html')
+        else:
+            return redirect(url_for('login'))
+
+     if request.method == 'PATCH':
+        if 'username' in session:
+            
+            return render_template('accident.html')
+        else:
+            return redirect(url_for('login'))
+
+     if request.method == 'DELETE':
+        if 'username' in session:
+            
+            return render_template('accident.html')
+        else:
+            return redirect(url_for('login'))
+    
 
 @application.route("/logout")
 def logout():
@@ -119,3 +167,4 @@ def logout():
 
 if __name__ == "__main__":
     application.run(debug=True, port=3000, host="0.0.0.0")
+

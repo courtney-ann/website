@@ -10,6 +10,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css">
         <script src="https://kit.fontawesome.com/2dd61525fb.js" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <title>Drowsy Driver Detection System - Drivers List</title>
     </head>
 
@@ -45,6 +46,11 @@
                         <th>First Name</th>
                         <th>Contact</th>
                     </tr> 
+
+                    <tbody id = 'myTable'> 
+
+                    </tbody>
+                </table>
             </div>
             
         </section>
@@ -61,7 +67,65 @@
                 navLinks.style.right = "-200px";
             }
         </script>
-        <script src = "static/script.js"></script>
+
+        <script> 
+        
+                var json = [
+                    {
+                        "_id": {
+                        "$oid": "628b040057b38553932b4b97"
+                        }, 
+                        "contact": "876-331-7440", 
+                        "firstName": "Courtney-Ann", 
+                        "lastName": "Hanson", 
+                        "license": "JA876", 
+                        "location": "77N 18W"
+                    }, 
+                    {
+                        "_id": {
+                        "$oid": "628d4559c0aeb3b7d5c2a2c6"
+                        }, 
+                        "contact": "876-297-6563", 
+                        "firstName": "Chris", 
+                        "lastName": "Hemsworth", 
+                        "license": "HL567893", 
+                        "location": "18N 76W"
+                    }, 
+                    {
+                        "_id": {
+                        "$oid": "628d45d9c0aeb3b7d5c2a2c7"
+                        }, 
+                        "contact": "876-698-4889", 
+                        "firstName": "Diane", 
+                        "lastName": "Brown", 
+                        "license": "TF89538", 
+                        "location": "18N 78W"
+                    }
+                    ]
+
+                //var json = '{{driver_list}}'
+                buildTable(json)
+            
+
+            function buildTable(data)
+            {
+                var table = document.getElementById('myTable')
+                for (var i = 0; i < data.length ; i++) {
+                    var row = `<tr> 
+                                    <td>${data[i]._id.$oid}</td>
+                                    <td>${data[i].license}</td>
+                                    <td>${data[i].lastName}</td>
+                                    <td>${data[i].firstName}</td>
+                                    <td>${data[i].contact}</td>         
+                               </tr>`
+                    table.innerHTML += row
+                }
+
+            }
+
+            
+        </script>
+        <!-- <script src = "static/script.js"></script> -->
     </body>
 
 </html>
