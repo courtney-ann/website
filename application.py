@@ -9,6 +9,7 @@ from flask_pymongo import PyMongo
 from marshmallow import Schema, fields, ValidationError
 from flask_cors import CORS
 import bcrypt
+import json
 
 
 load_dotenv()
@@ -83,9 +84,12 @@ def drivers():
     drivers = mongo.db.driverList
     if 'username' in session:
         list = drivers.find()
-        driver_list = loads(dumps(list))
-        driver_list = jsonify(driver_list)          
-        return render_template('drivers.html', driver_list = driver_list)
+        driver_list = loads(dumps(list))   
+        #driver_list = jsonify(driver_list)
+        return render_template('drivers.html', list = driver_list)
+        #return driver_list
+    
+
     else:
         return redirect(url_for('login'))
 
