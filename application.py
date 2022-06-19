@@ -1,6 +1,6 @@
 import os
 from json import loads
-import bcrypt
+from flask_login import LoginManager, login_required, current_user, logout_user
 from bson.json_util import dumps
 from dotenv import load_dotenv
 from flask import Flask, jsonify, redirect, request, session, render_template, url_for, flash
@@ -8,9 +8,7 @@ from datetime import timedelta
 from flask_pymongo import PyMongo
 from marshmallow import Schema, fields, ValidationError
 from flask_cors import CORS
-import bcrypt
 import json
-
 
 load_dotenv()
 
@@ -19,10 +17,8 @@ CORS(application)
 #setup location of database
 application.config["MONGO_URI"] = os.getenv("MONGO_CONNECTION_STRING") 
 mongo = PyMongo(application)
-
-application.permanent_session_lifetime = timedelta(minutes = 10)
+application.permanent_session_lifetime = timedelta(minutes = 30)
 application.secret_key = os.getenv("secret")
-
 
 class driverSchema(Schema):
     firstName = fields.String(required=True)
@@ -33,15 +29,6 @@ class driverSchema(Schema):
     status = fields.String(required=True)
     contact = fields.String(required=True)
 
-driver = {
-    "firstName": "Courtney-Ann",
-    "lastName": "Hanson",
-    "location": "77N 18W",
-    "time": "6:45:22 AM",
-    "license": "JA876",
-    "status": "Awake",
-    "contact": "876-331-7440"
-}
 
 @application.route('/home', methods = ['GET'])
 def home():
@@ -69,11 +56,9 @@ def login():
                 session['username'] = request.form['nm']
                 flash("Login succesful!")
                 return redirect(url_for('home')) 
-
             else:
                 flash("Login unsuccesful")
                 return redirect(url_for('login'))
-
     elif request.method == "GET":
          return render_template('login.html')
     
@@ -85,86 +70,138 @@ def drivers():
     if 'username' in session:
         list = drivers.find()
         driver_list = loads(dumps(list))   
-        #driver_list = jsonify(driver_list)
-        return render_template('drivers.html', list = driver_list)
-        #return driver_list
-    
-
+        return render_template('drivers.html', list = driver_list)  
     else:
         return redirect(url_for('login'))
 
+
+
 # Displays all drowsy drivers in the driver list collection
-@application.route('/drowsy', methods = ['GET', 'POST', 'PATCH', 'DELETE'])
+@application.route('/drowsy', methods = ['GET', 'POST'])
 def drowsy():
         drowsy = mongo.db.drowsyList
-        if request.method == 'GET':
-            if 'username' in session:
+        if 'username' in session:
+            if request.method == 'GET':
+                try:
+                    list = drowsy.find()
+                    drowsy_list = loads(dumps(list))
+                    return render_template('drowsy.html', list = drowsy_list)
+
+                except ValidationError as e:
+                    return(e.messages, 400)
+        else:
+            return redirect(url_for('login'))    
+        
+        if 'username' in session:
+            if request.method == 'POST':
+                try: 
+                    request_dict = request.json
+                    
+                except ValidationError as e:
+                    return(e.messages, 400)
+                new_driver = driverSchema().load(request_dict)
+                driver_document = drowsy.insert_one(new_driver) #(mongo object)
+                driver_id = driver_document.inserted_id
+                driver = drowsy.find_one({"_id": driver_id})  #criterion is that id must be the id of the driver just inserted
+                driver_json = loads(dumps(driver))
+                jsonify(driver_json) 
                 list = drowsy.find()
-                # drowsy_list = loads(dumps(list))
-                #return jsonify()       #list of drowsy drivers
-                return render_template('drowsy.html')
-            else:
-                return redirect(url_for('login'))
-
-        if request.method == 'POST':
-            if 'username' in session:
-                
-                return render_template('drowsy.html')
-            else:
-                return redirect(url_for('login'))
-
-        if request.method == 'PATCH':
-            if 'username' in session:
-                
-                return render_template('drowsy.html')
-            else:
-                return redirect(url_for('login'))
-
-        if request.method == 'DELETE':
-            if 'username' in session:
-                
-                return render_template('drowsy.html')
-            else:
-                return redirect(url_for('login'))
-
-# Displays all accidents with drivers in the driver list collection
-@application.route('/accident', methods = ['GET',' POST', 'PATCH', 'DELETE'])
-def accident():
-     accident = mongo.db.accidentList
-     if request.method == 'GET':
-        if 'username' in session:
-            list = accident.find()
-            accident_list = loads(dumps(list))
-            #return jsonify(accident_list)       #list of drowsy drivers
-            return render_template('accident.html')
+                drowsy_list = loads(dumps(list))
+                jsonify(drowsy_list) 
         else:
             return redirect(url_for('login'))
 
-     if request.method == 'POST':
-        if 'username' in session:
-            
-            return render_template('accident.html')
-        else:
-            return redirect(url_for('login'))
 
-     if request.method == 'PATCH':
-        if 'username' in session:
-            
-            return render_template('accident.html')
-        else:
-            return redirect(url_for('login'))
+# @application.route('/drowsy/<ObjectId:id>', methods = ['DELETE'])
+# def delete_drowsy(id):
+#     drowsy = mongo.db.drowsyList
+#     if request.method == 'DELETE':
+#         drowsy.delete_many({"_id":id,"status":"Awake"})
+#         drowsy.delete_many({"_id":id,"status":"Accident"})
+#         list = drowsy.find()
+#         drowsy_list = loads(dumps(list))
+#         return render_template('drowsy.html', list = drowsy_list) 
 
-     if request.method == 'DELETE':
-        if 'username' in session:
-            
-            return render_template('accident.html')
-        else:
-            return redirect(url_for('login'))
+
+@application.route('/drowsy/<ObjectId:id>', methods = ['PATCH'])
+def update_drowsy(id):
+    drowsy = mongo.db.drowsyList
+    request_dict = request.json 
+    try: 
+        driverSchema(partial=True).load(request_dict)
+    except ValidationError as e:
+        return(e.messages, 400)
+
+    drowsy.update_one({"_id": id}, {"$set": request.json})
+    driver = drowsy.find_one(id)
+    driver_json = loads(dumps(driver))
+    jsonify(driver_json)    
+    list = drowsy.find()
+    drowsy_list = loads(dumps(list))
+    jsonify(drowsy_list) 
+    return render_template('drowsy.html', list = drowsy_list)
+
+
+# # Displays all accidents with drivers in the driver list collection
+# @application.route('/accident', methods = ['GET','POST'])
+# def accident():
+#      accident = mongo.db.accidentList
+#      if request.method == 'GET':
+#         list = accident.find()
+#         accident_list = loads(dumps(list))
+#         return render_template('accident.html', list = accident_list)
+
+#      if request.method == 'POST':
+#             try: 
+#                 request_dict = request.json
+#             except ValidationError as err:
+#                 return(err.messages, 400)
+#             new_driver = driverSchema().load(request_dict)
+#             accident_document = accident.insert_one(new_driver) #(mongo object)
+#             driver_id = accident_document.inserted_id
+#             driver = accident.find_one({"_id": driver_id})  #criterion is that id must be the id of the driver just inserted
+#             driver_json = loads(dumps(driver))
+#             jsonify(driver_json) 
+#             list = accident.find()
+#             accident_list = loads(dumps(list))
+#             jsonify(accident_list)
+#             return render_template('accident.html', list = accident_list)
+
+
+# @application.route('/accident/<ObjectId:id>', methods = ['PATCH'])
+# def update_accident(id):
+#     accident = mongo.db.accidentList
+#     request_dict = request.json 
+#     try: 
+#         driverSchema(partial=True).load(request_dict)
+#     except ValidationError as err:
+#         return(err.messages, 400)
+
+#     accident.update_one({"_id": id}, {"$set": request.json})
+#     driver = accident.find_one(id)
+#     driver_json = loads(dumps(driver))
+#     jsonify(driver_json)    
+#     list = accident.find()
+#     accident_list = loads(dumps(list))
+#     jsonify(accident_list) 
+#     return render_template('accident.html', list = accident_list)
+  
+
+# @application.route('/accident/<ObjectId:id>', methods = ['DELETE'])
+# def delete_accident(id):
+#     accident = mongo.db.accidentList
+#     accident.delete_many({"id":id, "status":"Awake"})
+#     accident.delete_many({"_id":id,"status":"Drowsy"})
+#     list = accident.find()
+#     accident_list = loads(dumps(list))
+#     return render_template('accident.html', list = accident_list)
+
     
 
 @application.route("/logout")
 def logout():
     session.pop('username', None)
+    # session.clear()
     flash("Logout successful")
     return redirect(url_for('login'))
 
