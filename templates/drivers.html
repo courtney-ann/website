@@ -26,8 +26,8 @@
                         <li><a href = "home">HOME</a></li>
                         <li><a href = "about">ABOUT</a></li>
                         <li><a href = "drivers">DRIVERS</a></li>
-                        <li><a href = "drowsy">DROWSY DRIVERS</a></li>
-                        <li><a href = "accident">ACCIDENTS</a></li>
+                        <li><a href = "drowsy">DRIVER STATUS</a></li>
+                        <!-- <li><a href = "accident">ACCIDENTS</a></li> -->
                         <li><a href = "contact">CONTACT</a></li>
                     
                     </ul>
@@ -38,45 +38,37 @@
             <!-- Drivers List Page -->
             <div class = "drivers">
                 <h1>Drivers List</h1> 
-                <table>
-                    <tr>
-                        <th>ID</th>
-                        <th>License Plate #</th>
-                        <th>Surname</th>
-                        <th>First Name</th>
-                        <th>Contact</th>
-                    </tr>
-                        <tbody id = 'myTable'> 
-                            {% for driver in list%}
-                            <tr> 
-                                <td>{{driver._id}}</td>
-                                <td>{{driver.license}}</td>
-                                <td>{{driver.lastName}}</td>
-                                <td>{{driver.firstName}}</td>
-                                <td>{{driver.contact}}</td>  
-
-                            </tr>             
-                            {% endfor%}
-
-                        </tbody>              
+                <table class = 'table' cellspacing="0">
+                    
+                        <thead>
+                            <tr>
+                                <th><input type="text" class="search-input" placeholder="ID"></th>
+                                <th><input type="text" class="search-input" placeholder="License"></th>
+                                <th><input type="text" class="search-input" placeholder="Surname"></th>
+                                <th><input type="text" class="search-input" placeholder="First Name"></th>
+                                <th><input type="text" class="search-input" placeholder="Contact"></th>
+                            </tr>
+                        </thead>
+                            <tbody id = 'myTable'> 
+                                {% for driver in list%}
+                                <tr> 
+                                    <td>{{driver._id}}</td>
+                                    <td>{{driver.license}}</td>
+                                    <td>{{driver.lastName}}</td>
+                                    <td>{{driver.firstName}}</td>
+                                    <td>{{driver.contact}}</td>  
+    
+                                </tr>             
+                                {% endfor%}
+    
+                            </tbody> 
+                    
+                                 
                 </table>
             </div>
         </section>
 
-        <!-- JavaScript for Toggle Menu -->
-        <script>
-            var navLink = document.getElementById("navLinks");
-            
-            function showMenu(){
-                navLinks.style.right = "0";
-            }
-
-            function hideMenu(){
-                navLinks.style.right = "-200px";
-            }
-        </script>
-
-    <!-- <script src = "static/script.js"></script> -->
+    <script src = "static/script.js"></script>
     </body>
 
 </html>

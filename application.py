@@ -12,8 +12,6 @@ from flask_cors import CORS
 import bcrypt
 import json
 
-
-
 load_dotenv()
 
 application = Flask(__name__)
@@ -23,7 +21,6 @@ application.config["MONGO_URI"] = os.getenv("MONGO_CONNECTION_STRING")
 mongo = PyMongo(application)
 application.permanent_session_lifetime = timedelta(minutes = 30)
 application.secret_key = os.getenv("secret")
-
 
 class driverSchema(Schema):
     firstName = fields.String(required=True)
@@ -61,11 +58,9 @@ def login():
                 session['username'] = request.form['nm']
                 flash("Login succesful!")
                 return redirect(url_for('home')) 
-
             else:
                 flash("Login unsuccesful")
                 return redirect(url_for('login'))
-
     elif request.method == "GET":
          return render_template('login.html')
     
@@ -74,7 +69,6 @@ def login():
 @application.route('/drivers', methods = ['GET'])       
 def drivers():
     drivers = mongo.db.driverList
-
     list = drivers.find()
     driver_list = loads(dumps(list))   
     return render_template('drivers.html', list = driver_list)  
@@ -84,17 +78,22 @@ def drivers():
 @application.route('/drowsy', methods = ['GET', 'POST'])
 def drowsy():
         drowsy = mongo.db.drowsyList
-
         if request.method == 'GET':
-            list = drowsy.find()
-            drowsy_list = loads(dumps(list))
-            return render_template('drowsy.html', list = drowsy_list)
+            try:
+                list = drowsy.find()
+                drowsy_list = loads(dumps(list))
+                return render_template('drowsy.html', list = drowsy_list)
+
+            except ValidationError as e:
+                return(e.messages, 400)
+
 
         if request.method == 'POST':
             try: 
                 request_dict = request.json
-            except ValidationError as err:
-                return(err.messages, 400)
+                
+            except ValidationError as e:
+                return(e.messages, 400)
             new_driver = driverSchema().load(request_dict)
             driver_document = drowsy.insert_one(new_driver) #(mongo object)
             driver_id = driver_document.inserted_id
@@ -104,19 +103,17 @@ def drowsy():
             list = drowsy.find()
             drowsy_list = loads(dumps(list))
             jsonify(drowsy_list) 
-            return render_template('drowsy.html', list = drowsy_list)
 
 
-@application.route('/drowsy/<ObjectId:id>', methods = ['DELETE'])
-def delete_drowsy(id):
-    drowsy = mongo.db.drowsyList
-
-    if request.method == 'DELETE':
-        drowsy.delete_many({"_id":id,"status":"Awake"})
-        drowsy.delete_many({"_id":id,"status":"Accident"})
-        list = drowsy.find()
-        drowsy_list = loads(dumps(list))
-        return render_template('drowsy.html', list = drowsy_list) 
+# @application.route('/drowsy/<ObjectId:id>', methods = ['DELETE'])
+# def delete_drowsy(id):
+#     drowsy = mongo.db.drowsyList
+#     if request.method == 'DELETE':
+#         drowsy.delete_many({"_id":id,"status":"Awake"})
+#         drowsy.delete_many({"_id":id,"status":"Accident"})
+#         list = drowsy.find()
+#         drowsy_list = loads(dumps(list))
+#         return render_template('drowsy.html', list = drowsy_list) 
 
 
 @application.route('/drowsy/<ObjectId:id>', methods = ['PATCH'])
@@ -125,8 +122,8 @@ def update_drowsy(id):
     request_dict = request.json 
     try: 
         driverSchema(partial=True).load(request_dict)
-    except ValidationError as err:
-        return(err.messages, 400)
+    except ValidationError as e:
+        return(e.messages, 400)
 
     drowsy.update_one({"_id": id}, {"$set": request.json})
     driver = drowsy.find_one(id)
@@ -138,59 +135,59 @@ def update_drowsy(id):
     return render_template('drowsy.html', list = drowsy_list)
 
 
-# Displays all accidents with drivers in the driver list collection
-@application.route('/accident', methods = ['GET','POST'])
-def accident():
-     accident = mongo.db.accidentList
-     if request.method == 'GET':
-        list = accident.find()
-        accident_list = loads(dumps(list))
-        return render_template('accident.html', list = accident_list)
+# # Displays all accidents with drivers in the driver list collection
+# @application.route('/accident', methods = ['GET','POST'])
+# def accident():
+#      accident = mongo.db.accidentList
+#      if request.method == 'GET':
+#         list = accident.find()
+#         accident_list = loads(dumps(list))
+#         return render_template('accident.html', list = accident_list)
 
-     if request.method == 'POST':
-            try: 
-                request_dict = request.json
-            except ValidationError as err:
-                return(err.messages, 400)
-            new_driver = driverSchema().load(request_dict)
-            accident_document = accident.insert_one(new_driver) #(mongo object)
-            driver_id = accident_document.inserted_id
-            driver = accident.find_one({"_id": driver_id})  #criterion is that id must be the id of the driver just inserted
-            driver_json = loads(dumps(driver))
-            jsonify(driver_json) 
-            list = accident.find()
-            accident_list = loads(dumps(list))
-            jsonify(accident_list)
-            return render_template('accident.html', list = accident_list)
+#      if request.method == 'POST':
+#             try: 
+#                 request_dict = request.json
+#             except ValidationError as err:
+#                 return(err.messages, 400)
+#             new_driver = driverSchema().load(request_dict)
+#             accident_document = accident.insert_one(new_driver) #(mongo object)
+#             driver_id = accident_document.inserted_id
+#             driver = accident.find_one({"_id": driver_id})  #criterion is that id must be the id of the driver just inserted
+#             driver_json = loads(dumps(driver))
+#             jsonify(driver_json) 
+#             list = accident.find()
+#             accident_list = loads(dumps(list))
+#             jsonify(accident_list)
+#             return render_template('accident.html', list = accident_list)
 
 
-@application.route('/accident/<ObjectId:id>', methods = ['PATCH'])
-def update_accident(id):
-    accident = mongo.db.accidentList
-    request_dict = request.json 
-    try: 
-        driverSchema(partial=True).load(request_dict)
-    except ValidationError as err:
-        return(err.messages, 400)
+# @application.route('/accident/<ObjectId:id>', methods = ['PATCH'])
+# def update_accident(id):
+#     accident = mongo.db.accidentList
+#     request_dict = request.json 
+#     try: 
+#         driverSchema(partial=True).load(request_dict)
+#     except ValidationError as err:
+#         return(err.messages, 400)
 
-    accident.update_one({"_id": id}, {"$set": request.json})
-    driver = accident.find_one(id)
-    driver_json = loads(dumps(driver))
-    jsonify(driver_json)    
-    list = accident.find()
-    accident_list = loads(dumps(list))
-    jsonify(accident_list) 
-    return render_template('accident.html', list = accident_list)
+#     accident.update_one({"_id": id}, {"$set": request.json})
+#     driver = accident.find_one(id)
+#     driver_json = loads(dumps(driver))
+#     jsonify(driver_json)    
+#     list = accident.find()
+#     accident_list = loads(dumps(list))
+#     jsonify(accident_list) 
+#     return render_template('accident.html', list = accident_list)
   
 
-@application.route('/accident/<ObjectId:id>', methods = ['DELETE'])
-def delete_accident(id):
-    accident = mongo.db.accidentList
-    accident.delete_many({"id":id, "status":"Awake"})
-    accident.delete_many({"_id":id,"status":"Drowsy"})
-    list = accident.find()
-    accident_list = loads(dumps(list))
-    return render_template('accident.html', list = accident_list)
+# @application.route('/accident/<ObjectId:id>', methods = ['DELETE'])
+# def delete_accident(id):
+#     accident = mongo.db.accidentList
+#     accident.delete_many({"id":id, "status":"Awake"})
+#     accident.delete_many({"_id":id,"status":"Drowsy"})
+#     list = accident.find()
+#     accident_list = loads(dumps(list))
+#     return render_template('accident.html', list = accident_list)
 
     
 
