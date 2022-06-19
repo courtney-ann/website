@@ -45,29 +45,22 @@
                         <th>Surname</th>
                         <th>First Name</th>
                         <th>Contact</th>
-                    </tr> 
-                    
+                    </tr>
                         <tbody id = 'myTable'> 
                             {% for driver in list%}
-
                             <tr> 
                                 <td>{{driver._id}}</td>
                                 <td>{{driver.license}}</td>
                                 <td>{{driver.lastName}}</td>
                                 <td>{{driver.firstName}}</td>
-                                <td>{{driver.contact}}</td>     
-                            </tr>
-                               
+                                <td>{{driver.contact}}</td>  
+
+                            </tr>             
                             {% endfor%}
 
-                        </tbody>
-                    
-                    
+                        </tbody>              
                 </table>
-            
-
             </div>
-            
         </section>
 
         <!-- JavaScript for Toggle Menu -->

@@ -47,7 +47,23 @@
                      <th>Contact</th>
                      <th>Location</th>
                      <th>Time</th>
-                    </tr>    
+                    </tr> 
+                    
+                    <tbody id = 'aTable'> 
+                        {% for driver in list%}
+                        <tr> 
+                            <td>{{driver._id}}</td>
+                            <td>{{driver.license}}</td>
+                            <td>{{driver.lastName}}</td>
+                            <td>{{driver.firstName}}</td>
+                            <td>{{driver.status}}</td> 
+                            <td>{{driver.contact}}</td>  
+                            <td>{{driver.location}}</td> 
+                            <td>{{driver.time}}</td> 
+
+                        </tr>             
+                        {% endfor%}
+                    </tbody>
             </div>
             
         </section>
