@@ -79,7 +79,24 @@ def drivers():
 # Displays all drowsy drivers in the driver list collection
 @application.route('/drowsy', methods = ['GET', 'POST'])
 def drowsy():
-        drowsy = mongo.db.drowsyList
+        drowsy = mongo.db.drowsyList    
+        
+        if request.method == 'POST':
+            try: 
+                request_dict = request.json
+                
+            except ValidationError as e:
+                return(e.messages, 400)
+            new_driver = driverSchema().load(request_dict)
+            driver_document = drowsy.insert_one(new_driver) #(mongo object)
+            driver_id = driver_document.inserted_id
+            driver = drowsy.find_one({"_id": driver_id})  #criterion is that id must be the id of the driver just inserted
+            driver_json = loads(dumps(driver))
+            jsonify(driver_json) 
+            list = drowsy.find()
+            drowsy_list = loads(dumps(list))
+            jsonify(drowsy_list) 
+
         if 'username' in session:
             if request.method == 'GET':
                 try:
@@ -89,25 +106,6 @@ def drowsy():
 
                 except ValidationError as e:
                     return(e.messages, 400)
-        else:
-            return redirect(url_for('login'))    
-        
-        if 'username' in session:
-            if request.method == 'POST':
-                try: 
-                    request_dict = request.json
-                    
-                except ValidationError as e:
-                    return(e.messages, 400)
-                new_driver = driverSchema().load(request_dict)
-                driver_document = drowsy.insert_one(new_driver) #(mongo object)
-                driver_id = driver_document.inserted_id
-                driver = drowsy.find_one({"_id": driver_id})  #criterion is that id must be the id of the driver just inserted
-                driver_json = loads(dumps(driver))
-                jsonify(driver_json) 
-                list = drowsy.find()
-                drowsy_list = loads(dumps(list))
-                jsonify(drowsy_list) 
         else:
             return redirect(url_for('login'))
 
