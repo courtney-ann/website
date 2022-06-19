@@ -1,6 +1,5 @@
 import os
 from json import loads
-import bcrypt
 from flask_login import LoginManager, login_required, current_user, logout_user
 from bson.json_util import dumps
 from dotenv import load_dotenv
@@ -9,7 +8,6 @@ from datetime import timedelta
 from flask_pymongo import PyMongo
 from marshmallow import Schema, fields, ValidationError
 from flask_cors import CORS
-import bcrypt
 import json
 
 load_dotenv()
