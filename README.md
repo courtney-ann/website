@@ -5,3 +5,13 @@ The website will display the status of vehicles received using POST requests fro
 The flask server will store the data into a database.
 The database will store this information and display it on webpages.
 
+
+
+Homepage:
+![homepage](https://user-images.githubusercontent.com/95727276/175091886-ae46ddf5-f07b-4f17-8aba-12dfe8b70575.png)
+
+Login page:
+![login](https://user-images.githubusercontent.com/95727276/175091982-4178f9a8-cd33-4955-ba54-9553c1b08766.png)
+
+Drivers Status page:
+![status page](https://user-images.githubusercontent.com/95727276/175092062-52447b66-1042-4c59-aa77-9e04302c9c16.png)
