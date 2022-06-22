@@ -14,4 +14,5 @@ Login page:
 ![login](https://user-images.githubusercontent.com/95727276/175091982-4178f9a8-cd33-4955-ba54-9553c1b08766.png)
 
 Drivers Status page:
-![status page](https://user-images.githubusercontent.com/95727276/175092062-52447b66-1042-4c59-aa77-9e04302c9c16.png)
+
+![status page](https://user-images.githubusercontent.com/95727276/175096313-07778b6d-9de8-49dd-9795-8fde95c8e9f0.png)
